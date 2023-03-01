@@ -1,7 +1,8 @@
 import {weather_data} from "./data.js";
+let data = weather_data[0];//Ciudad de Guayaquil Default
 
-let loadDayForecastData = () => {
-    let data_city = weather_data[0];//Ciudad de Guayaquil
+let loadDayForecastData = (data_city) => {
+    
     let {city, date, maxtemperature, mintemperature, cloudiness, wind, rainfall,}  = data_city;
     
     //Forecast del Dia
@@ -52,8 +53,7 @@ let loadDayForecastData = () => {
 
 }
 
-let loadWeekForecastData = () => {
-    let data_city = weather_data[0];//Ciudad de Guayaquil
+let loadWeekForecastData = (data_city) => {
     let data_week_city = data_city.forecast_week;
 
     let htmlWeek = '';
@@ -69,7 +69,7 @@ let loadWeekForecastData = () => {
             <span class="text-xs">${date}</span>
         </div>
         <div class="d-flex align-items-center ">
-            <span class="font-weight-bold text-dark mx-2">${max}/span> |  <span class="text-dark mx-2">${min}</span>
+            <span class="font-weight-bold text-dark mx-2">${max}</span> |  <span class="text-dark mx-2">${min}</span>
             <div class="ms-4"><i class="material-icons fs-2 me-1 rainy">${icon}</i></div>
         </div>
         </li>\n
@@ -80,11 +80,45 @@ let loadWeekForecastData = () => {
     template_forecast[0].innerHTML = htmlWeek;
 }
 
+let closeWeekForecastData = () => {
+    let htmlWeek = '';
+    let template_forecast = document.getElementsByClassName('list-group');
+    template_forecast[0].innerHTML = htmlWeek;
+}
+
+let loadCities = () => {
+    let seleccione = document.getElementById("dropdownMenuButton");
+    let htmlOption = seleccione.innerHTML;
+    let htmlOptionsCities = htmlOption;
+
+    weather_data.forEach(ciudad => {
+        let nombre = ciudad.city;
+        htmlOptionsCities = htmlOptionsCities + `
+        <option class="dropdown-item" value="${nombre}">${nombre}</option>
+        `
+    })
+    seleccione.innerHTML = htmlOptionsCities;
+}
+
 document.addEventListener("DOMContentLoaded", (e) => {
-    loadDayForecastData()
+    loadDayForecastData(data)
+
+    loadCities();
+
+    let seleccione = document.getElementById("dropdownMenuButton");
+    seleccione.addEventListener("change", e => {
+        let selectedValue = e.target.value
+        weather_data.forEach(ciudad => {
+            if(ciudad.city == selectedValue){
+                data = ciudad
+                loadDayForecastData(data);
+                closeWeekForecastData();
+            }
+        })
+    })
 
     let cargar = document.getElementById('loadinfo')
-    cargar.addEventListener("click", (e) => loadWeekForecastData())
+    cargar.addEventListener("click", (e) => loadWeekForecastData(data))
 });
 
 ;
